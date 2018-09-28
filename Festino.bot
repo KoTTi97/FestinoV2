@@ -1,0 +1,18 @@
+{
+    "name": "Festino",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:3978/api/messages",
+            "id": "73352000-c186-11e8-891d-4f83636fa059",
+            "name": "http://localhost:3978/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "C:\\Users\\kotti\\Documents\\WebDevelopment\\Festino\\Festino.bot"
+}

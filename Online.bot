@@ -1,0 +1,18 @@
+{
+    "name": "Online",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "8f1bab50-d5bc-46f1-b2cf-a0c7df09c1ca",
+            "appPassword": "qXRkKaDCJcqfz=rE",
+            "endpoint": "https://festino.azurewebsites.net/api/messages",
+            "id": "89d93250-c321-11e8-af01-8338af5d9ace",
+            "name": "https://festino.azurewebsites.net/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "C:\\Users\\kotti\\Documents\\WebDevelopment\\Festino\\Online.bot"
+}
