@@ -117,7 +117,7 @@ bot.dialog("/", [(session) =>
 {
     if(firstDialog)
     {
-        session.send("Hi, my name is Festino!");
+        session.send("Hi, my name is Festino! You can now choose between different products. If you need any help during the conversation feel free to use the 'help' keyword");
     }
     builder.Prompts.choice(session, firstDialog ? "Which platform do you need help for?" :
         "Can I help you with you with something else?", "SharePoint|Teams",
@@ -153,7 +153,7 @@ bot.dialog("CategorySelection", [(session, args) =>
 
 bot.dialog("SharePointMain", [(session) =>
 {
-    builder.Prompts.text(session, "What do you want to know about SharePoint?");
+    builder.Prompts.text(session, "What do you want to know about SharePoint?\nType 'cancel' to leave the SharePoint context");
 }, (session, results) =>
 {
     session.beginDialog('sharePointBasicQnAMakerDialog');
@@ -164,7 +164,7 @@ bot.dialog("SharePointMain", [(session) =>
 
 bot.dialog("TeamsMain", [(session) =>
 {
-    builder.Prompts.text(session, "What do you want to know about Teams?");
+    builder.Prompts.text(session, "What do you want to know about Teams?\nType 'cancel' to leave the Teams context");
 }, (session, results) =>
 {
     session.beginDialog('teamsBasicQnAMakerDialog');
@@ -179,7 +179,7 @@ bot.dialog("TeamsMain", [(session) =>
 
 bot.dialog("Cancel", [(session) =>
 {
-    session.send("You now leave this context");
+    session.send("You are now leaving this context");
     session.replaceDialog("/");
 }])
 .triggerAction({
