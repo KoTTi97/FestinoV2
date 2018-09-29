@@ -2,6 +2,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 
+//adaptive Card JSON für Help-Dialog
 var card = {
     "contentType": "application/vnd.microsoft.card.adaptive",
     "content": {
@@ -55,33 +56,29 @@ var knowledgeBaseIDs = {
     teams: "4d5edd0f-13c6-4af9-ab9c-d5167858a492"
 };
 
+//server wird initialisiert und gestarted (Port 3978)
 var server = restify.createServer();
 server.listen(3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
 
+//connector für Endanwendungen
 var connector = new builder.ChatConnector({
     appId: process.env.MicrosoftAppId,
     appPassword: process.env.MicrosoftAppPassword,
     openIdMetadata: process.env.BotOpenIdMetadata
 });
+
+//bot wird initialisier
 var bot = new builder.UniversalBot(connector);
 
 var qnaMakerTools = new builder_cognitiveservices.QnAMakerTools();
 bot.library(qnaMakerTools.createLibrary());
 
+//der Chatbot soll auf den REST-Endpoint '/api/messages' hören
 server.post('/api/messages', connector.listen());
 
-/*bot.on("conversationUpdate", (message) =>
-{
-    if (message.membersAdded[0].id === message.address.bot.id) {
-        var reply = new builder.Message()
-            .address(message.address)
-            .text("Hi, my name is Festino! How can i help you?");
-        bot.send(reply);
-    }
-});*/
-
+//luis recognizer, und qnaMaker recognizer werden initialisert und die Standard qna-Dialoge werden definiert
 var luisRecognizer = new builder.LuisRecognizer("https://westeurope.api.cognitive.microsoft.com/luis/v2.0/apps/5dbd3446-a86c-4819-b48b-d5f17e91b87e?subscription-key=6a71133fa1964f1b90fed95d8a7aa0e6&timezoneOffset=60&q=");
 var teamsRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
     knowledgeBaseId: knowledgeBaseIDs.teams,
@@ -113,6 +110,10 @@ bot.dialog('teamsBasicQnAMakerDialog', teamsBasicQnAMakerDialog);
 
 bot.recognizer(luisRecognizer);
 
+/* standard-Root Dialog --> Standard Dialog Ablauf mit dem Bot.
+ * Fragt Nutzer nach gewünschter Plattform (SharePoint oder Teams)
+ * Gibt die Antwort des Nutzer in einen speziellen Auswahl Dialog ('Category Selection')
+ */
 bot.dialog("/", [(session) =>
 {
     if(firstDialog)
@@ -134,6 +135,8 @@ bot.dialog("Goodbye", (session) =>
     matches: "Goodbye"
 });
 
+// Dialog wird vom Root-Dialog aufgerufen und je nach Intent des Nutzers wird der SharePoint oder Teams Dialog aufgerufen
+// Nach Beantwortung der Nutzerfrage wird der Dialog automatisch mit dem selben Kontext erneut aufgerufen
 bot.dialog("CategorySelection", [(session, args) =>
 {
     firstDialog = false;
@@ -151,6 +154,7 @@ bot.dialog("CategorySelection", [(session, args) =>
     session.replaceDialog("CategorySelection", {category: result.category});
 }]);
 
+//Dialog zur Beantwortung von Fragen zu SharePoint
 bot.dialog("SharePointMain", [(session) =>
 {
     builder.Prompts.text(session, "What do you want to know about SharePoint?\nType 'cancel' to leave the SharePoint context");
@@ -162,6 +166,7 @@ bot.dialog("SharePointMain", [(session) =>
     session.endDialogWithResult({category: "SharePoint"})
 }]);
 
+//Dialog zur Beantwortung von Fragen zu SharePoint
 bot.dialog("TeamsMain", [(session) =>
 {
     builder.Prompts.text(session, "What do you want to know about Teams?\nType 'cancel' to leave the Teams context");
@@ -176,7 +181,7 @@ bot.dialog("TeamsMain", [(session) =>
 
 
 
-
+// Cancel Dialog zum verlassen eines speziellen Kontexts
 bot.dialog("Cancel", [(session) =>
 {
     session.send("You are now leaving this context");
@@ -186,6 +191,7 @@ bot.dialog("Cancel", [(session) =>
     matches: /^cancel$/i
 });
 
+// Help Dialog
 bot.dialog("Help", [(session) =>
 {
     firstDialog = false;
